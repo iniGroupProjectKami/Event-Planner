@@ -1,8 +1,42 @@
+const axios = require("axios");
 
 class ControllerApp {
-    static showAllDataTickets(req, res) {
-        
+  static async showMuseumJakarta(req, res) {
+    try {
+      const result = await axios({
+        method: `GET`,
+        url: `http://api.jakarta.go.id/v1/museum/`,
+        headers: { Authorization: process.env.JKT48_KEY },
+      });
+      res.status(200).json(result.data.data);
+    } catch (error) {
+      res.status(500).json(error);
     }
+  }
+  static async showHolidays(req, res) {
+    try {
+      const result = await axios({
+        method: `GET`,
+        url: `https://calendarific.com/api/v2/holidays?api_key=${process.env.CALENDARIFIC_KEY}&country=ID&year=2020`,
+      });
+      res.status(200).json(result.data.response.holidays);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+  static async showWeather(req, res) {
+    try {
+      const result = await axios({
+        method: `GET`,
+        url: `https://api.openweathermap.org/data/2.5/weather?lat=-6.189112310695864&lon=106.84186652717992&appid=${process.env.WEATHER_KEY}`,
+      });
+      // console.log(result);
+      res.status(200).json(result.data);
+    } catch (error) {
+      // console.log(error);
+      res.status(500).json(error);
+    }
+  }
 }
 
-module.exports = ControllerApp
+module.exports = ControllerApp;
