@@ -5,7 +5,11 @@ function authentication(req, res, next) {
     try {
         let access_token = req.headers.access_token
         if(!access_token) {
-            res.status(401).json({ error: "You must have account" })
+            // res.status(401).json({ error: "You must have account" })
+            throw {
+                status: 400,
+                message: "You must have account, please login first"
+            }
         }else {
             const decoded = verifyToken(access_token)
             let id = decoded.id
@@ -22,16 +26,20 @@ function authentication(req, res, next) {
                     if(data) {
                         next()
                     }else {
-                        res.status(401).json({ msg: "You must have account, please login first"})
+                        // res.status(401).json({ msg: "You must have account, please login first"})
+                        throw {
+                            status: 400,
+                            message: "You must have account, please login first"
+                        }
                     }
                 })
                 .catch(err => {
-                    res.status(500).json(err)
+                    throw(err)
                 })
         }
     }
     catch(err) {
-        res.status(500).json(err)
+        next(err)
     }
 }
 

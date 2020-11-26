@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const { generateToken } = require("../helpers/generateAndVerifyToken");
 
 class ControllerUser {
-  static userRegister(req, res) {
+  static userRegister(req, res, next) {
     let objUser = {
       name: req.body.name,
       email: req.body.email,
@@ -15,24 +15,30 @@ class ControllerUser {
         res.status(201).json({ name: data.name, email: data.email });
       })
       .catch((err) => {
-        res.status(500).json({ err: err });
+        next(err)
       });
   }
 
-  static userLogin(req, res) {
-    let email = req.body.email;
-    let password = req.body.password;
+  static userLogin(req, res, next) {
+    const payload = {
+      email: req.body.email || "",
+      password: req.body.password || ""
+    }
     User.findOne({
       where: {
-        email,
+        email: payload.email
       },
     })
       .then((user) => {
         if (!user) {
-          res.status(401).json({ message: "Invalid Email/Password" });
+          // res.status(401).json({ message: "Invalid Email/Password" });
+          throw {
+            status: 400,
+            message: "Invalid email/password"
+          }
         } else {
           let passwordInDataBase = user.password;
-          if (bcrypt.compareSync(password, passwordInDataBase)) {
+          if (bcrypt.compareSync(payload.password, passwordInDataBase)) {
             const access_token = generateToken({
               name: user.name,
               id: user.id,
@@ -40,17 +46,56 @@ class ControllerUser {
             });
             res.status(200).json({ access_token });
           } else {
-            res.status(401).json({ message: "Invalid email/password" });
+            // res.status(401).json({ message: "Invalid email/password" });
+            throw {
+              status: 400,
+              message: "Invalid email/password"
+            }
           }
         }
       })
       .catch((err) => {
         console.log(err);
-        res.status(500).json({ message: "Internal Server Error" });
+        next(err)
       });
   }
+  
+  static async logInByGoogle(req, res, next) {
+    try {
+        const ticket = await client.verifyIdToken({
+            idToken: req.body.google_token,
+            audience: process.env.GOOGLE_CLIENT_ID,  // Specify the CLIENT_ID of the app that accesses the backend
+            // Or, if multiple clients access the backend:
+            //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
+        });
 
-  static logInByGoogle(req, res) {}
+        const payload = ticket.getPayload()
+        console.log(payload);
+        const userlogin = await User.findOne({
+            where: {
+                email: payload.email
+            }
+        })
+
+        if (userlogin) {
+            const access_token = Token.getToken({
+              id:userlogin.id, 
+              email:userlogin.email, 
+              name:userlogin.name
+            })
+            res.status(200).json({access_token})
+        } else {
+            const createuser = await User.create({
+                email: payload.email,
+                password: process.env.GOOGLE_PASSWORD
+            })
+            const access_token = Token.getToken({id:createuser.id, email:createuser.email})
+            res.status(200).json({access_token})
+        }
+    } catch (error) {
+        next(error)
+    }
+  }
 }
 
 module.exports = ControllerUser;
