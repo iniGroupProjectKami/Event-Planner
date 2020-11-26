@@ -3,7 +3,6 @@ const {
   Model
 } = require('sequelize');
 const bcrypt = require('bcryptjs');
-require('dotenv').config();
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     /**
@@ -18,27 +17,36 @@ module.exports = (sequelize, DataTypes) => {
   User.init({
     name: {
       type: DataTypes.STRING,
+      allowNull:false,
       validate: {
+        notNull: {
+          msg: "Name cannot Empty"
+        },
         notEmpty: {
-          args: true,
           msg: "Name cannot Empty"
         }
       }
     },
     email: {
       type: DataTypes.STRING,
+      allowNull:false,
       validate: {
+        notNull: {
+          msg: "Email cannot Empty"
+        },
         notEmpty: {
-          args: true,
           msg: "Email cannot Empty"
         }
       }
     },
     password: {
       type: DataTypes.STRING,
+      allowNull:false,
       validate: {
+        notNull: {
+          msg: "Password cannot Empty"
+        },
         notEmpty: {
-          args: true,
           msg: "Password cannot Empty"
         }
       }

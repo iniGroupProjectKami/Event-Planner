@@ -1,7 +1,7 @@
 const axios = require("axios");
 
 class ControllerApp {
-  static async showMuseumJakarta(req, res) {
+  static async showMuseumJakarta(req, res, next) {
     try {
       const result = await axios({
         method: `GET`,
@@ -10,10 +10,13 @@ class ControllerApp {
       });
       res.status(200).json(result.data.data);
     } catch (error) {
-      res.status(500).json(error);
+      // res.status(500).json(error);
+      next(error)
     }
   }
-  static async showHolidays(req, res) {
+
+
+  static async showHolidays(req, res, next) {
     try {
       const result = await axios({
         method: `GET`,
@@ -21,10 +24,13 @@ class ControllerApp {
       });
       res.status(200).json(result.data.response.holidays);
     } catch (error) {
-      res.status(500).json(error);
+      // res.status(500).json(error);
+      next(error)
     }
   }
-  static async showWeather(req, res) {
+
+
+  static async showWeather(req, res, next) {
     try {
       const result = await axios({
         method: `GET`,
@@ -34,7 +40,8 @@ class ControllerApp {
       res.status(200).json(result.data);
     } catch (error) {
       // console.log(error);
-      res.status(500).json(error);
+      // res.status(500).json(error);
+      next(error)
     }
   }
 }
