@@ -1,6 +1,8 @@
 const { User } = require("../models/index");
 const bcrypt = require("bcryptjs");
 const { generateToken } = require("../helpers/generateAndVerifyToken");
+const {OAuth2Client} = require('google-auth-library');
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 class ControllerUser {
   static userRegister(req, res, next) {
@@ -76,9 +78,9 @@ class ControllerUser {
                 email: payload.email
             }
         })
-
+        console.log(payload);
         if (userlogin) {
-            const access_token = Token.getToken({
+            const access_token = generateToken({
               id:userlogin.id, 
               email:userlogin.email, 
               name:userlogin.name
@@ -86,10 +88,11 @@ class ControllerUser {
             res.status(200).json({access_token})
         } else {
             const createuser = await User.create({
+                name: payload.name,
                 email: payload.email,
                 password: process.env.GOOGLE_PASSWORD
             })
-            const access_token = Token.getToken({id:createuser.id, email:createuser.email})
+            const access_token = generateToken({id:createuser.id, email:createuser.email})
             res.status(200).json({access_token})
         }
     } catch (error) {
