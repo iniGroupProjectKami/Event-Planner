@@ -22,7 +22,18 @@ class ControllerApp {
         method: `GET`,
         url: `https://calendarific.com/api/v2/holidays?api_key=${process.env.CALENDARIFIC_KEY}&country=ID&year=2020`,
       });
-      res.status(200).json(result.data.response.holidays);
+      const found = result.data.response.holidays
+      const output = []
+      const month = new Date().toISOString().split('-')[1]
+      // console.log(month);
+      for (let i = 0; i < found.length; i++) {
+        const element = found[i];
+        if (element.date.datetime.month == month) {
+          output.push(element)
+        }
+      }
+      // res.status(200).json(result.data.response.holidays);
+      res.status(200).json(output);
     } catch (error) {
       // res.status(500).json(error);
       next(error)
