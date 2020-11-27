@@ -1,5 +1,5 @@
 module.exports = (err, req, res, next) => {
-    console.log(err.name);
+    // console.log(err.name);
     if (err.status) {
         res.status(err.status).json({ errors: err.message})
     } else if (err.name == 'SequelizeUniqueConstraintError' || err.name == 'SequelizeValidationError') {
