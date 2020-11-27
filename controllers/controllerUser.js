@@ -85,7 +85,7 @@ class ControllerUser {
               email:userlogin.email, 
               name:userlogin.name
             })
-            res.status(200).json({access_token})
+            res.status(200).json({access_token, name: userlogin.name, email: userlogin.email})
         } else {
             const createuser = await User.create({
                 name: payload.name,
@@ -93,7 +93,7 @@ class ControllerUser {
                 password: process.env.GOOGLE_PASSWORD
             })
             const access_token = generateToken({id:createuser.id, email:createuser.email})
-            res.status(200).json({access_token})
+            res.status(200).json({access_token, name: userlogin.name, email: userlogin.email})
         }
     } catch (error) {
         next(error)
