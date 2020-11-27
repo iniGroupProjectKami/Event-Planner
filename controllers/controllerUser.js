@@ -46,7 +46,7 @@ class ControllerUser {
               id: user.id,
               email: user.email,
             });
-            res.status(200).json({ access_token });
+            res.status(200).json({ access_token, name:user.name, email:user.email });
           } else {
             // res.status(401).json({ message: "Invalid email/password" });
             throw {
