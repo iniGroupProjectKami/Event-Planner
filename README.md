@@ -100,7 +100,27 @@ Collection for routes users
 
 * **Method:**
   
-  `GET`
+  `POST`
+
+* **Success Response:**
+  
+  * **Code:** 200 <br />
+    **Content:**
+    {
+      "access_token": "google_token",
+      "name": "Name User",
+      "email": "Email User"
+    }
+ 
+* **Error Response:**
+
+  * **Code:** 
+
+  500 INTERNAL SERVICE ERROR
+    **Content:**
+    {
+      "errors": "Internal Server Error"
+    }
   
 
 
